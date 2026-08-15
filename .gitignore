@@ -1,0 +1,32 @@
+# Dataset files
+# Raw and processed datasets are excluded from version control.
+# The Kaggle dataset is too large to store in the repository.
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.csv
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environment variables and API keys
+.env
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# VS Code user settings
+.vscode/
+
+# Trained models and serialized objects
+*.pkl
+*.joblib
