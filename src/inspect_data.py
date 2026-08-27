@@ -73,7 +73,7 @@ print(df["hospdead"].value_counts())
 
 
 
-# Dictionary explaining what each column means
+# Dictionary explaining each column
 data_dictionary = {
     'age': 'Patient age in years',
     'death': 'Died within ~6-month study follow-up (1=yes, 0=no)',
@@ -132,3 +132,17 @@ dd.index.name = 'variable'
 # Check nothing was mistyped/missed
 print(f"\nData dictionary covers {len(dd)} of {df.shape[1]} columns")
 print(dd)
+
+# These can't really be 0 in a living patient
+print("\nPhysiologically implausible zero values:")
+for c in ['meanbp', 'hrt', 'resp']:
+    n = (df[c] == 0).sum()
+    print(f"  {c}: {n} rows ({n/len(df)*100:.2f}%) recorded as exactly 0 -- not possible in a living patient")
+
+# These shouldn't be negative
+print("\nNegative values in cost / timing variables:")
+for c in ['totmcst', 'dnrday']:
+    n = (df[c] < 0).sum()
+    print(f"  {c}: {n} rows negative, min value = {df[c].min()} -- inconsistent with variable definition")
+
+
