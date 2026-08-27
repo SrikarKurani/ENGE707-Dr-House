@@ -70,3 +70,65 @@ print()
 
 print("hospdead value counts:")
 print(df["hospdead"].value_counts())
+
+
+
+# Dictionary explaining what each column means
+data_dictionary = {
+    'age': 'Patient age in years',
+    'death': 'Died within ~6-month study follow-up (1=yes, 0=no)',
+    'sex': 'Patient sex',
+    'hospdead': 'Died during this hospital admission (1=yes, 0=no)',
+    'slos': 'Length of hospital stay (days)',
+    'd.time': 'Days of follow-up until death or censoring',
+    'dzgroup': 'Primary disease group',
+    'dzclass': 'Primary disease class (broader grouping of dzgroup)',
+    'num.co': 'Number of comorbidities',
+    'edu': 'Years of education',
+    'income': 'Income bracket',
+    'scoma': 'Coma/reactivity score at admission (SUPPORT physiology score)',
+    'charges': 'Total hospital charges (USD)',
+    'totcst': 'Total ratio-of-cost-to-charge cost estimate (USD)',
+    'totmcst': 'Total micro-cost estimate (USD)',
+    'avtisst': 'Average TISS (Therapeutic Intervention Scoring System) severity score',
+    'race': 'Patient race',
+    'sps': 'SUPPORT physiology score',
+    'aps': 'APACHE III physiology score',
+    # These two are predictions from the original study, not raw measurements
+    'surv2m': "Model-estimated probability of surviving 2 months",
+    'surv6m': "Model-estimated probability of surviving 6 months",
+    'hday': 'Day of study entry (administrative index)',
+    'diabetes': 'Diabetes present (1=yes, 0=no)',
+    'dementia': 'Dementia present (1=yes, 0=no)',
+    'ca': 'Cancer status (no / yes / metastatic)',
+    'prg2m': "Physician-estimated probability of surviving 2 months",
+    'prg6m': "Physician-estimated probability of surviving 6 months",
+    'dnr': 'Do-not-resuscitate status',
+    'dnrday': 'Study day on which DNR order was written',
+    'meanbp': 'Mean arterial blood pressure (mmHg)',
+    'wblc': 'White blood cell count (1000s/mm3)',
+    'hrt': 'Heart rate (beats/min)',
+    'resp': 'Respiration rate (breaths/min)',
+    'temp': 'Body temperature (Celsius)',
+    'pafi': 'PaO2/FiO2 ratio (oxygenation measure)',
+    'alb': 'Serum albumin (g/dL)',
+    'bili': 'Serum bilirubin (mg/dL)',
+    'crea': 'Serum creatinine (mg/dL)',
+    'sod': 'Serum sodium (mEq/L)',
+    'ph': 'Arterial blood pH',
+    'glucose': 'Blood glucose (mg/dL)',
+    'bun': 'Blood urea nitrogen (mg/dL)',
+    'urine': 'Urine output (mL/day)',
+    'adlp': 'Activities of Daily Living score, patient-reported',
+    'adls': 'Activities of Daily Living score, surrogate-reported',
+    'sfdm2': 'Functional disability status at follow-up',
+    'adlsc': 'Activities of Daily Living score, imputed/combined',
+}
+
+# Turns it into a table
+dd = pd.DataFrame.from_dict(data_dictionary, orient='index', columns=['description'])
+dd.index.name = 'variable'
+
+# Check nothing was mistyped/missed
+print(f"\nData dictionary covers {len(dd)} of {df.shape[1]} columns")
+print(dd)
