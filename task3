@@ -81,3 +81,15 @@ def plot_disease_groups(df_raw):
         plt.legend(title='Outcome', labels=['Survived', 'Died'])
         plt.tight_layout()
         plt.show()
+from config import *
+
+def plot_clinical_heatmap(df_raw):
+    key_vars = ['age', 'aps', 'sps', 'surv2m', 'surv6m', 'meanbp', 'hrt', 'resp', 'temp', 'pafi', 'alb', 'crea', 'charges', 'hospdead']
+    avail_vars = [v for v in key_vars if v in df_raw.columns]
+    if len(avail_vars) > 0:
+        plt.figure(figsize=(11, 9))
+        corr = df_raw[avail_vars].corr()
+        sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', vmin=-1, vmax=1, linewidths=0.5)
+        plt.title('Figure 5: Correlation Heatmap of Clinical Metrics & In-Hospital Outcome', fontsize=13, fontweight='bold')
+        plt.tight_layout()
+        plt.show()
