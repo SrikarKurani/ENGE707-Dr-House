@@ -19,3 +19,22 @@ def plot_missing_values(df_raw):
         plt.ylabel('Feature')
         plt.tight_layout()
         plt.show()
+from config import *
+
+def plot_feature_distributions(df_raw):
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    if 'age' in df_raw.columns:
+        sns.histplot(df_raw['age'].dropna(), kde=True, ax=axes[0, 0], color='teal', bins=30)
+        axes[0, 0].set_title('Age Distribution', fontweight='bold')
+    if 'charges' in df_raw.columns:
+        sns.histplot(np.log1p(df_raw['charges'].dropna()), kde=True, ax=axes[0, 1], color='coral', bins=30)
+        axes[0, 1].set_title('Hospital Charges (Log-Transformed)', fontweight='bold')
+    if 'aps' in df_raw.columns:
+        sns.histplot(df_raw['aps'].dropna(), kde=True, ax=axes[1, 0], color='purple', bins=30)
+        axes[1, 0].set_title('Acute Physiology Score (APS)', fontweight='bold')
+    if 'meanbp' in df_raw.columns:
+        sns.histplot(df_raw['meanbp'].dropna(), kde=True, ax=axes[1, 1], color='seagreen', bins=30)
+        axes[1, 1].set_title('Mean Blood Pressure (meanbp)', fontweight='bold')
+    plt.suptitle('Figure 2: Physiological and Demographic Feature Distributions', fontsize=14, fontweight='bold', y=1.02)
+    plt.tight_layout()
+    plt.show()
