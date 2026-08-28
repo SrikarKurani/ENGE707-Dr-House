@@ -1,6 +1,4 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+from config import *
 
 def plot_missing_values(df_raw):
     plt.figure(figsize=(10, 6))
@@ -19,7 +17,6 @@ def plot_missing_values(df_raw):
         plt.ylabel('Feature')
         plt.tight_layout()
         plt.show()
-from config import *
 
 def plot_feature_distributions(df_raw):
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
@@ -38,7 +35,6 @@ def plot_feature_distributions(df_raw):
     plt.suptitle('Figure 2: Physiological and Demographic Feature Distributions', fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     plt.show()
-from config import *
 
 def plot_mortality_targets(df_raw):
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
@@ -69,7 +65,6 @@ def plot_mortality_targets(df_raw):
     plt.suptitle('Figure 3: Target Mortality Distribution Analysis', fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     plt.show()
-from config import *
 
 def plot_disease_groups(df_raw):
     if 'dzgroup' in df_raw.columns and 'hospdead' in df_raw.columns:
@@ -81,7 +76,6 @@ def plot_disease_groups(df_raw):
         plt.legend(title='Outcome', labels=['Survived', 'Died'])
         plt.tight_layout()
         plt.show()
-from config import *
 
 def plot_clinical_heatmap(df_raw):
     key_vars = ['age', 'aps', 'sps', 'surv2m', 'surv6m', 'meanbp', 'hrt', 'resp', 'temp', 'pafi', 'alb', 'crea', 'charges', 'hospdead']
