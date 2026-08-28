@@ -38,3 +38,34 @@ def plot_feature_distributions(df_raw):
     plt.suptitle('Figure 2: Physiological and Demographic Feature Distributions', fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     plt.show()
+from config import *
+
+def plot_mortality_targets(df_raw):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    if 'hospdead' in df_raw.columns:
+        sns.countplot(
+            x='hospdead', 
+            data=df_raw, 
+            hue='hospdead', 
+            palette='Set2', 
+            legend=False, 
+            ax=axes[0]
+        )
+        axes[0].set_title('In-Hospital Mortality (hospdead)', fontweight='bold')
+        axes[0].set_xticks([0, 1])
+        axes[0].set_xticklabels(['Survived', 'Died in Hosp'])
+    if 'death' in df_raw.columns:
+        sns.countplot(
+            x='death', 
+            data=df_raw, 
+            hue='death', 
+            palette='Set1', 
+            legend=False, 
+            ax=axes[1]
+        )
+        axes[1].set_title('Overall Follow-up Mortality (death)', fontweight='bold')
+        axes[1].set_xticks([0, 1])
+        axes[1].set_xticklabels(['Survived', 'Died'])
+    plt.suptitle('Figure 3: Target Mortality Distribution Analysis', fontsize=14, fontweight='bold', y=1.02)
+    plt.tight_layout()
+    plt.show()
