@@ -69,3 +69,15 @@ def plot_mortality_targets(df_raw):
     plt.suptitle('Figure 3: Target Mortality Distribution Analysis', fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
     plt.show()
+from config import *
+
+def plot_disease_groups(df_raw):
+    if 'dzgroup' in df_raw.columns and 'hospdead' in df_raw.columns:
+        plt.figure(figsize=(11, 6))
+        sns.countplot(y='dzgroup', hue='hospdead', data=df_raw, palette='mako')
+        plt.title('Figure 4: In-Hospital Mortality Across Disease Groups (dzgroup)', fontsize=13, fontweight='bold')
+        plt.xlabel('Patient Count')
+        plt.ylabel('Disease Category')
+        plt.legend(title='Outcome', labels=['Survived', 'Died'])
+        plt.tight_layout()
+        plt.show()
