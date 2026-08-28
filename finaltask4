@@ -1,0 +1,89 @@
+from config import *
+
+def plot_missing_values(df_raw):
+    plt.figure(figsize=(10, 6))
+    missing_pct = (df_raw.isnull().sum() / len(df_raw) * 100).sort_values(ascending=False)
+    missing_pct = missing_pct[missing_pct > 0]
+    if not missing_pct.empty:
+        sns.barplot(
+            x=missing_pct.values, 
+            y=missing_pct.index, 
+            hue=missing_pct.index, 
+            palette='viridis', 
+            legend=False
+        )
+        plt.title('Figure 1: Missing Value Percentage per Feature (Raw Data)', fontsize=13, fontweight='bold')
+        plt.xlabel('Missing Percentage (%)')
+        plt.ylabel('Feature')
+        plt.tight_layout()
+        plt.show()
+
+def plot_feature_distributions(df_raw):
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    if 'age' in df_raw.columns:
+        sns.histplot(df_raw['age'].dropna(), kde=True, ax=axes[0, 0], color='teal', bins=30)
+        axes[0, 0].set_title('Age Distribution', fontweight='bold')
+    if 'charges' in df_raw.columns:
+        sns.histplot(np.log1p(df_raw['charges'].dropna()), kde=True, ax=axes[0, 1], color='coral', bins=30)
+        axes[0, 1].set_title('Hospital Charges (Log-Transformed)', fontweight='bold')
+    if 'aps' in df_raw.columns:
+        sns.histplot(df_raw['aps'].dropna(), kde=True, ax=axes[1, 0], color='purple', bins=30)
+        axes[1, 0].set_title('Acute Physiology Score (APS)', fontweight='bold')
+    if 'meanbp' in df_raw.columns:
+        sns.histplot(df_raw['meanbp'].dropna(), kde=True, ax=axes[1, 1], color='seagreen', bins=30)
+        axes[1, 1].set_title('Mean Blood Pressure (meanbp)', fontweight='bold')
+    plt.suptitle('Figure 2: Physiological and Demographic Feature Distributions', fontsize=14, fontweight='bold', y=1.02)
+    plt.tight_layout()
+    plt.show()
+
+def plot_mortality_targets(df_raw):
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    if 'hospdead' in df_raw.columns:
+        sns.countplot(
+            x='hospdead', 
+            data=df_raw, 
+            hue='hospdead', 
+            palette='Set2', 
+            legend=False, 
+            ax=axes[0]
+        )
+        axes[0].set_title('In-Hospital Mortality (hospdead)', fontweight='bold')
+        axes[0].set_xticks([0, 1])
+        axes[0].set_xticklabels(['Survived', 'Died in Hosp'])
+    if 'death' in df_raw.columns:
+        sns.countplot(
+            x='death', 
+            data=df_raw, 
+            hue='death', 
+            palette='Set1', 
+            legend=False, 
+            ax=axes[1]
+        )
+        axes[1].set_title('Overall Follow-up Mortality (death)', fontweight='bold')
+        axes[1].set_xticks([0, 1])
+        axes[1].set_xticklabels(['Survived', 'Died'])
+    plt.suptitle('Figure 3: Target Mortality Distribution Analysis', fontsize=14, fontweight='bold', y=1.02)
+    plt.tight_layout()
+    plt.show()
+
+def plot_disease_groups(df_raw):
+    if 'dzgroup' in df_raw.columns and 'hospdead' in df_raw.columns:
+        plt.figure(figsize=(11, 6))
+        sns.countplot(y='dzgroup', hue='hospdead', data=df_raw, palette='mako')
+        plt.title('Figure 4: In-Hospital Mortality Across Disease Groups (dzgroup)', fontsize=13, fontweight='bold')
+        plt.xlabel('Patient Count')
+        plt.ylabel('Disease Category')
+        plt.legend(title='Outcome', labels=['Survived', 'Died'])
+        plt.tight_layout()
+        plt.show()
+
+def plot_clinical_heatmap(df_raw):
+    key_vars = ['age', 'aps', 'sps', 'surv2m', 'surv6m', 'meanbp', 'hrt', 'resp', 'temp', 'pafi', 'alb', 'crea', 'charges', 'hospdead']
+    avail_vars = [v for v in key_vars if v in df_raw.columns]
+    if len(avail_vars) > 0:
+        plt.figure(figsize=(11, 9))
+        corr = df_raw[avail_vars].corr()
+        sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', vmin=-1, vmax=1, linewidths=0.5)
+        plt.title('Figure 5: Correlation Heatmap of Clinical Metrics & In-Hospital Outcome', fontsize=13, fontweight='bold')
+        plt.tight_layout()
+        plt.show()
