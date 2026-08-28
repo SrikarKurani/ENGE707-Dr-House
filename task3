@@ -1,0 +1,21 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def plot_missing_values(df_raw):
+    plt.figure(figsize=(10, 6))
+    missing_pct = (df_raw.isnull().sum() / len(df_raw) * 100).sort_values(ascending=False)
+    missing_pct = missing_pct[missing_pct > 0]
+    if not missing_pct.empty:
+        sns.barplot(
+            x=missing_pct.values, 
+            y=missing_pct.index, 
+            hue=missing_pct.index, 
+            palette='viridis', 
+            legend=False
+        )
+        plt.title('Figure 1: Missing Value Percentage per Feature (Raw Data)', fontsize=13, fontweight='bold')
+        plt.xlabel('Missing Percentage (%)')
+        plt.ylabel('Feature')
+        plt.tight_layout()
+        plt.show()
