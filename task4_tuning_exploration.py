@@ -63,3 +63,30 @@ print(
     f"F1={f1_score(y_test, y_pred):.4f}  "
     f"AUC={roc_auc_score(y_test, y_proba):.4f}"
 )
+
+# Test different numbers of learning iterations to see if
+# more training improves the model's performance
+print("\nTesting learning_iterations")
+
+for iters in [5000, 10000, 20000]:
+    start = time.time()
+
+    model = eLCS(
+        learning_iterations=iters,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train)
+
+    elapsed = time.time() - start
+
+    y_pred = model.predict(X_test)
+    y_proba = model.predict_proba(X_test)[:, 1]
+
+    print(
+        f"iterations={iters}: time={elapsed:.1f}s  "
+        f"Acc={accuracy_score(y_test, y_pred):.4f}  "
+        f"BalAcc={balanced_accuracy_score(y_test, y_pred):.4f}  "
+        f"F1={f1_score(y_test, y_pred):.4f}  "
+        f"AUC={roc_auc_score(y_test, y_proba):.4f}"
+    )
