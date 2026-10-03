@@ -1,0 +1,16 @@
+Raw dataset shape: (9105, 47)
+Missing values remaining (untouched, eLCS handles these natively): 42656
+
+eLCS parameters used: {'learning_iterations': 5000, 'random_state': 42}
+Training time: 7.9s
+
+--- Baseline Results (raw dataset, including leakage columns) ---
+Accuracy:          0.9248
+Balanced Accuracy:  0.9045
+F1-score:           0.8559
+ROC-AUC:            0.9585
+
+Note: This baseline still includes the leakage columns.
+They are kept for Task 2 so the original dataset can be tested.
+The cleaned version will be used in Task 3 for comparison.
+

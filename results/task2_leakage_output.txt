@@ -1,0 +1,16 @@
+Shape after removing 9 leakage columns: (9105, 38)
+
+Training time: 7.1s
+
+--- Results WITHOUT leakage columns ---
+Accuracy:          0.8781
+Balanced Accuracy: 0.7917
+F1-score:          0.7225
+ROC-AUC:           0.8896
+
+Compared to the raw baseline, removing the leakage columns caused the
+largest drops in Balanced Accuracy (0.9045 to 0.7917) and F1-score
+(0.8559 to 0.7225). Accuracy also dropped from 0.9248 to 0.8781,
+while ROC-AUC dropped from 0.9585 to 0.8896. This shows that the
+leakage columns had a noticeable effect on the model's performance.
+
