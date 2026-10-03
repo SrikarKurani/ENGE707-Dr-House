@@ -1,4 +1,4 @@
-import json, time, warnings
+import json, os, time, warnings
 import numpy as np
 import pandas as pd
 from scipy.stats import binomtest
@@ -16,6 +16,7 @@ from sklearn.tree import DecisionTreeClassifier
 from skeLCS import eLCS
 
 warnings.filterwarnings('ignore')
+os.makedirs('results', exist_ok=True)
 
 # Task 6: model comparison (patched version).
 # Changes from the earlier script:
@@ -120,7 +121,7 @@ for cfg in ELCS_GRID:
     rows.append({**cfg, 'cv_balacc_mean': np.mean(sc), 'cv_balacc_std': np.std(sc), 'secs': round(time.time() - t0, 1)})
     log(rows[-1])
 cv_tab = pd.DataFrame(rows)
-cv_tab.round(4).to_csv('task6_elcs_tuning_cv.csv', index=False)
+cv_tab.round(4).to_csv('results/task6_elcs_tuning_cv.csv', index=False)
 best = {k: int(cv_tab.loc[cv_tab.cv_balacc_mean.idxmax(), k]) for k in ['learning_iterations', 'N']}
 log('selected eLCS config:', best)
 
@@ -148,7 +149,7 @@ for name, (model, Xa, Xb) in experiments.items():
     preds[name], fitted[name] = pred, model
     log(f'done: {name} ({secs:.1f}s)')
 results = pd.DataFrame(rows).set_index('Model')
-results.round(4).to_csv('task6_results.csv')
+results.round(4).to_csv('results/task6_results.csv')
 log('\n' + results.round(4).to_string())
 
 # ---- exact McNemar vs improved LCS, Holm-corrected ----
@@ -166,7 +167,7 @@ order, adj, run = np.argsort(mc.p_raw.values), np.empty(len(mc)), 0.0
 for rank, i in enumerate(order):
     run = max(run, (len(mc) - rank) * mc.p_raw.values[i]); adj[i] = min(1.0, run)
 mc['p_holm'] = adj
-mc.to_csv('task6_mcnemar.csv', index=False)
+mc.to_csv('results/task6_mcnemar.csv', index=False)
 log(f'\nMcNemar (exact) vs {ref}, Holm-corrected\n' + mc.to_string(index=False))
 
 # ---- Task 7: rules from the improved eLCS (only conditions that restrict the observed range are shown) ----
@@ -190,10 +191,10 @@ for cl in pop:
                       'rule': ' AND '.join(parts)})
 rules = pd.DataFrame(rule_rows)
 rules['support_score'] = rules.numerosity * rules.fitness
-rules.sort_values('support_score', ascending=False).to_csv('task7_all_rules.csv', index=False)
+rules.sort_values('support_score', ascending=False).to_csv('results/task7_all_rules.csv', index=False)
 log(f'\nPopulation: {len(pop)} macro / {int(rules.numerosity.sum())} micro | mean effective conditions '
     f'{rules.n_conditions_effective.mean():.1f} | class1 {int((rules["class"]==1).sum())} class0 {int((rules["class"]==0).sum())}')
-with open('task6_run_info.json', 'w') as f:
+with open('results/task6_run_info.json', 'w') as f:
     json.dump({'selected_elcs_config': best, 'split': 'stratified 80/20, random_state=42',
                'n_train': int(len(tr)), 'n_test': int(len(te)),
                'preprocessing': 'Task 3 steps fitted on training rows only'}, f, indent=2)
