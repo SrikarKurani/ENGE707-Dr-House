@@ -20,7 +20,7 @@ print("Phase II Task 3 started successfully.")
 # ============================================================
 
 # Load the original dataset
-df = pd.read_csv("support2.csv")
+df = pd.read_csv("data/raw/support2.csv")
 
 print("\n--- RAW DATASET CHECK ---")
 
