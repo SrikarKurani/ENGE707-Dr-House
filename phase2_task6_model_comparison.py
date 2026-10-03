@@ -83,7 +83,7 @@ for name, (model, X) in experiments.items():
 
 results = pd.DataFrame(rows).set_index('Model')
 print(results.round(4).to_string())
-results.round(4).to_csv('task6_results.csv')
+results.round(4).to_csv('results/task6_results.csv')
 
 # ---------- statistical test: exact McNemar, improved LCS vs every other model ----------
 def mcnemar_exact(a_pred, b_pred, y_true):

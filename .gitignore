@@ -30,3 +30,7 @@ Thumbs.db
 # Trained models and serialized objects
 *.pkl
 *.joblib
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
