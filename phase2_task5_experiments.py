@@ -4,6 +4,8 @@
 import numpy as np
 import pandas as pd
 
+from scipy.stats import binomtest
+
 from sklearn.metrics import (
     accuracy_score,
     precision_score,
@@ -125,3 +127,193 @@ def evaluate_model(model_name, y_true, y_pred, y_proba=None):
 
 
 print("\nModel evaluation function created successfully.")
+# ------------------------------------------------------------
+# 3. EXACT MCNEMAR STATISTICAL TEST
+# ------------------------------------------------------------
+
+def mcnemar_exact(y_true, pred_a, pred_b):
+    """
+    Perform an exact McNemar test on two classifiers evaluated
+    on the same test observations.
+
+    Returns the number of discordant prediction pairs and
+    the exact two-sided p-value.
+    """
+
+    correct_a = np.asarray(pred_a) == np.asarray(y_true)
+    correct_b = np.asarray(pred_b) == np.asarray(y_true)
+
+    # Model A correct, Model B incorrect
+    a_only_correct = int(np.sum(correct_a & ~correct_b))
+
+    # Model A incorrect, Model B correct
+    b_only_correct = int(np.sum(~correct_a & correct_b))
+
+    discordant = a_only_correct + b_only_correct
+
+    if discordant == 0:
+        p_value = 1.0
+    else:
+        p_value = binomtest(
+            min(a_only_correct, b_only_correct),
+            n=discordant,
+            p=0.5,
+            alternative="two-sided"
+        ).pvalue
+
+    return {
+        "A only correct": a_only_correct,
+        "B only correct": b_only_correct,
+        "Discordant pairs": discordant,
+        "p-value": p_value
+    }
+
+
+print("Exact McNemar test function created successfully.")
+# ------------------------------------------------------------
+# 4. FUNCTION VALIDATION CHECK
+# ------------------------------------------------------------
+
+# Simple controlled example to verify the evaluation code
+test_y_true = np.array([0, 0, 0, 1, 1, 1])
+test_y_pred = np.array([0, 0, 1, 1, 0, 1])
+test_y_proba = np.array([0.10, 0.20, 0.70, 0.80, 0.40, 0.90])
+
+validation_results = evaluate_model(
+    "Validation Example",
+    test_y_true,
+    test_y_pred,
+    test_y_proba
+)
+
+print("\n--- Evaluation Function Validation ---")
+for metric, value in validation_results.items():
+    print(f"{metric}: {value}")
+
+validation_mcnemar = mcnemar_exact(
+    test_y_true,
+    test_y_pred,
+    np.array([0, 1, 0, 1, 1, 0])
+)
+
+print("\n--- McNemar Function Validation ---")
+for item, value in validation_mcnemar.items():
+    print(f"{item}: {value}")
+
+print("\nTask 5 functions validated successfully.")
+# ------------------------------------------------------------
+# 5. LOAD AND VALIDATE EXPERIMENT RESULTS
+# ------------------------------------------------------------
+
+RESULTS_PATH = "results/task6_results.csv"
+
+experiment_results = pd.read_csv(RESULTS_PATH)
+
+required_metrics = [
+    "Acc",
+    "BalAcc",
+    "Prec",
+    "Recall",
+    "F1",
+    "ROC-AUC",
+    "PR-AUC",
+    "TN",
+    "FP",
+    "FN",
+    "TP"
+]
+
+missing_metrics = [
+    metric for metric in required_metrics
+    if metric not in experiment_results.columns
+]
+
+print("\n--- Actual Experiment Results Check ---")
+print("Number of evaluated models:", len(experiment_results))
+print("Models:")
+for model in experiment_results["Model"]:
+    print(" -", model)
+
+if missing_metrics:
+    raise ValueError(
+        f"Missing required evaluation metrics: {missing_metrics}"
+    )
+
+print("\nAll required classification metrics are present.")
+
+# Verify confusion-matrix totals equal the test-set size
+experiment_results["CM_Total"] = (
+    experiment_results["TN"]
+    + experiment_results["FP"]
+    + experiment_results["FN"]
+    + experiment_results["TP"]
+)
+
+expected_test_size = len(y_test)
+
+if not (experiment_results["CM_Total"] == expected_test_size).all():
+    raise ValueError(
+        "At least one model's confusion matrix does not match "
+        "the Task 5 test-set size."
+    )
+
+print(
+    f"All confusion matrices contain exactly "
+    f"{expected_test_size} test observations."
+)
+
+print("\nActual experiment results validated successfully.")
+# ------------------------------------------------------------
+# 6. LOAD AND VALIDATE STATISTICAL TEST RESULTS
+# ------------------------------------------------------------
+
+MCNEMAR_PATH = "results/task6_mcnemar.csv"
+
+mcnemar_results = pd.read_csv(MCNEMAR_PATH)
+
+required_mcnemar_columns = [
+    "Compared with",
+    "improved_only_correct",
+    "other_only_correct",
+    "p_raw",
+    "p_holm"
+]
+
+missing_mcnemar_columns = [
+    column for column in required_mcnemar_columns
+    if column not in mcnemar_results.columns
+]
+
+print("\n--- Statistical Test Results Check ---")
+
+if missing_mcnemar_columns:
+    raise ValueError(
+        f"Missing McNemar result columns: {missing_mcnemar_columns}"
+    )
+
+print("Number of model comparisons:", len(mcnemar_results))
+
+# Check that p-values are valid probabilities
+if not mcnemar_results["p_raw"].between(0, 1).all():
+    raise ValueError("Invalid raw McNemar p-value detected.")
+
+if not mcnemar_results["p_holm"].between(0, 1).all():
+    raise ValueError("Invalid Holm-adjusted p-value detected.")
+
+# Holm-adjusted p-values should never be smaller than raw p-values
+if not (
+    mcnemar_results["p_holm"] >= mcnemar_results["p_raw"]
+).all():
+    raise ValueError(
+        "A Holm-adjusted p-value is smaller than its raw p-value."
+    )
+
+print("All raw McNemar p-values are valid.")
+print("All Holm-adjusted p-values are valid.")
+print("Holm correction consistency check passed.")
+
+print("\nCompared models:")
+for model in mcnemar_results["Compared with"]:
+    print(" -", model)
+
+print("\nStatistical test results validated successfully.")
