@@ -317,3 +317,32 @@ for model in mcnemar_results["Compared with"]:
     print(" -", model)
 
 print("\nStatistical test results validated successfully.")
+
+# 7. RESULTS AND INTERPRETATION
+# Print the hold-out results that Task 6 saved, so the Task 5 output
+# shows the actual numbers and not only the validation checks.
+print("\n--- Hold-out test results (from Task 6) ---")
+print(
+    experiment_results[["Model", "Acc", "BalAcc", "F1", "ROC-AUC", "PR-AUC"]]
+    .round(4)
+    .to_string(index=False)
+)
+
+# Go through each McNemar comparison and say whether the difference is
+# significant after the Holm correction (0.05 level).
+print("\n--- Exact McNemar tests against the improved eLCS (Holm-corrected) ---")
+for _, row in mcnemar_results.iterrows():
+    if row["p_holm"] < 0.05:
+        verdict = "significant"
+    else:
+        verdict = "not significant"
+
+    # "only correct" means the test patients where just one of the two
+    # models got the prediction right
+    print(
+        f"{row['Compared with']}: improved only correct = {row['improved_only_correct']}, "
+        f"other only correct = {row['other_only_correct']}, "
+        f"Holm p = {row['p_holm']:.2g} -> {verdict} at the 0.05 level"
+    )
+
+print("\nTask 5 completed.")
