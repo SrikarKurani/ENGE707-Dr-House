@@ -855,3 +855,66 @@ print("\nTarget counts in saved test data:")
 print(test_unscaled[TARGET].value_counts())
 
 print("\nTASK 3 PREPROCESSING PIPELINE COMPLETED SUCCESSFULLY.")
+
+# TASK 3 - OUTLIER AND CLASS IMBALANCE CHECKS
+# These checks will print information. 
+
+print("\n" + "=" * 60)
+print("OUTLIER CHECK (IQR rule, training data only)")
+print("=" * 60)
+
+# Only check continuous numerical features for outliers.
+continuous_features = [
+    column for column in numerical_features
+    if X_train[column].nunique() > 10
+]
+
+q1 = X_train[continuous_features].quantile(0.25)
+q3 = X_train[continuous_features].quantile(0.75)
+iqr = q3 - q1
+
+lower_limit = q1 - 1.5 * iqr
+upper_limit = q3 + 1.5 * iqr
+
+outlier_counts = (
+    (X_train[continuous_features] < lower_limit) |
+    (X_train[continuous_features] > upper_limit)
+).sum()
+
+outlier_table = pd.DataFrame({
+    "Outliers": outlier_counts,
+    "Percent of training rows": (outlier_counts / len(X_train) * 100).round(1)
+}).sort_values("Outliers", ascending=False)
+
+print("\nFeatures with the most IQR outliers:")
+print(outlier_table.head(10))
+
+print(
+    "\nDecision: outliers are kept. Extreme values like very high hospital"
+    "\ncharges or creatinine are believable for critically ill patients, so"
+    "\nthey are not data entry mistakes (the impossible zero and negative"
+    "\nvalues were already fixed above). eLCS rules use intervals instead of"
+    "\ndistances, so extreme values should affect them less than they would"
+    "\naffect a distance-based or linear model."
+)
+
+print("\n" + "=" * 60)
+print("CLASS IMBALANCE CHECK")
+print("=" * 60)
+
+train_counts = y_train.value_counts()
+imbalance_ratio = train_counts[0] / train_counts[1]
+
+print("\nTraining class counts:")
+print(train_counts)
+print(f"\nMajority:minority ratio = {imbalance_ratio:.2f} : 1")
+
+print(
+    "\nDecision: no resampling. The imbalance is only moderate (about 26%"
+    "\npositive), eLCS has no class weight option, and resampling would make"
+    "\nit harder to compare directly with the Task 2 baselines and the other"
+    "\nmodels. Instead the results are judged with balanced accuracy, F1 and"
+    "\nPR-AUC as well as accuracy, so the death class doesn't get hidden."
+)
+
+print("\nTask 3 outlier and class imbalance checks completed.")
